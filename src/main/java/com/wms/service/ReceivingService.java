@@ -27,14 +27,35 @@ public class ReceivingService {
         this.storageRepo = storageRepo;
     }
 
+    /**
+     * Receive shipment and create inventory item
+     * 
+     * @param request the receiving request containing product ID, storage bin ID,
+     *                and quantity
+     * @return the created inventory item
+     * @throws IllegalArgumentException if request data is invalid
+     * @throws RuntimeException         if product or storage bin not found
+     */
     @Transactional
     public InventoryItem receiveShipment(ReceivingRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Receiving request cannot be null");
+        }
+        if (request.getProductId() == null || request.getProductId() <= 0) {
+            throw new IllegalArgumentException("Invalid product ID");
+        }
+        if (request.getStorageBinId() == null || request.getStorageBinId() <= 0) {
+            throw new IllegalArgumentException("Invalid storage bin ID");
+        }
+        if (request.getQuantity() == null || request.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
 
         Product product = productRepo.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + request.getProductId()));
 
         StorageBin storageBin = storageRepo.findById(request.getStorageBinId())
-                .orElseThrow(() -> new RuntimeException("Storage Bin not found"));
+                .orElseThrow(() -> new RuntimeException("Storage Bin not found with ID: " + request.getStorageBinId()));
 
         InventoryItem item = new InventoryItem();
 

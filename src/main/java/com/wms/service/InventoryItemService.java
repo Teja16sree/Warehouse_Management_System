@@ -16,7 +16,11 @@ public class InventoryItemService {
     }
 
     /**
-     * Create a new inventory item
+     * Create a new inventory item with validation
+     * 
+     * @param inventoryItem the inventory item to create
+     * @return the created inventory item
+     * @throws IllegalArgumentException if required fields are invalid
      */
     public InventoryItem createInventoryItem(InventoryItem inventoryItem) {
         if (inventoryItem.getProduct() == null) {
@@ -33,6 +37,8 @@ public class InventoryItemService {
 
     /**
      * Get all inventory items
+     * 
+     * @return list of all inventory items
      */
     public List<InventoryItem> getAllInventoryItems() {
         return inventoryItemRepository.findAll();
@@ -40,9 +46,13 @@ public class InventoryItemService {
 
     /**
      * Get inventory item by ID
+     * 
+     * @param id the inventory item ID
+     * @return optional containing the inventory item if found
+     * @throws IllegalArgumentException if ID is invalid
      */
     public Optional<InventoryItem> getInventoryItemById(Long id) {
-        if (id <= 0) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid inventory item ID");
         }
         return inventoryItemRepository.findById(id);
@@ -50,9 +60,15 @@ public class InventoryItemService {
 
     /**
      * Update an existing inventory item
+     * 
+     * @param id          the inventory item ID
+     * @param itemDetails the updated inventory item details
+     * @return the updated inventory item
+     * @throws IllegalArgumentException if ID is invalid
+     * @throws RuntimeException         if inventory item not found
      */
     public InventoryItem updateInventoryItem(Long id, InventoryItem itemDetails) {
-        if (id <= 0) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid inventory item ID");
         }
         Optional<InventoryItem> item = inventoryItemRepository.findById(id);
@@ -74,9 +90,13 @@ public class InventoryItemService {
 
     /**
      * Delete an inventory item
+     * 
+     * @param id the inventory item ID
+     * @throws IllegalArgumentException if ID is invalid
+     * @throws RuntimeException         if inventory item not found
      */
     public void deleteInventoryItem(Long id) {
-        if (id <= 0) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid inventory item ID");
         }
         if (!inventoryItemRepository.existsById(id)) {
@@ -87,9 +107,15 @@ public class InventoryItemService {
 
     /**
      * Add quantity to inventory item
+     * 
+     * @param id            the inventory item ID
+     * @param quantityToAdd the quantity to add
+     * @return the updated inventory item
+     * @throws IllegalArgumentException if ID or quantity is invalid
+     * @throws RuntimeException         if inventory item not found
      */
     public InventoryItem addQuantity(Long id, Integer quantityToAdd) {
-        if (id <= 0) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid inventory item ID");
         }
         if (quantityToAdd == null || quantityToAdd <= 0) {
@@ -106,9 +132,15 @@ public class InventoryItemService {
 
     /**
      * Remove quantity from inventory item
+     * 
+     * @param id               the inventory item ID
+     * @param quantityToRemove the quantity to remove
+     * @return the updated inventory item
+     * @throws IllegalArgumentException if ID, quantity, or insufficient stock
+     * @throws RuntimeException         if inventory item not found
      */
     public InventoryItem removeQuantity(Long id, Integer quantityToRemove) {
-        if (id <= 0) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid inventory item ID");
         }
         if (quantityToRemove == null || quantityToRemove <= 0) {
