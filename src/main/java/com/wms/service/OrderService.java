@@ -3,6 +3,7 @@ package com.wms.service;
 import com.wms.entity.InventoryItem;
 import com.wms.entity.Order;
 import com.wms.entity.Product;
+import com.wms.exception.InsufficientStockException;
 import com.wms.repository.InventoryItemRepository;
 import com.wms.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,6 @@ public class OrderService {
 
     /**
      * Update Order Status
-     * Deduct inventory when status becomes PACKED
      */
     public Order updateOrderStatus(Long orderId, String status) {
 
@@ -83,6 +83,17 @@ public class OrderService {
                         "Inventory not found for product");
             }
 
+            // Check stock availability
+            if (inventory.getQuantity() < order.getQuantity()) {
+
+                throw new InsufficientStockException(
+                        "Not enough stock available. Available: "
+                                + inventory.getQuantity()
+                                + ", Requested: "
+                                + order.getQuantity());
+            }
+
+            // Deduct inventory
             inventory.setQuantity(
                     inventory.getQuantity()
                             - order.getQuantity());
